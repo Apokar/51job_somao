@@ -1,13 +1,28 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import datetime
+import time
 
-for i in [1,2,3,4,5,6,7,'asd',8,9,10]:
-    while True:
-        try:
-            i%2==0
+# for i in [1,2,3,4,5,6,7,'asd',8,9,10]:
+#     try:
+#         if i%2==0:
+#             print i
+#
+#     except Exception, e:
+#         print 'except'
+lllist=[1,2,3,4,5,6,7,'asd',8,9,10]
+def test():
+    for i in lllist:
+        if i%2==0:
             print i
-            break
-        except Exception, e:
-            print 'except'
-            break
+
+if __name__ =="__main__":
+
+    try:
+        test()
+    except Exception,e:
+        print 'ooo'
+
+
+
+
+

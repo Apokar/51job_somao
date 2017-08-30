@@ -1,0 +1,25 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+te.py
+test.py
+testfield.py
+123123.py
+1.jpg
+51job_python.txt
+record.txt
+result.txt
+spider.py
+spider2.py
+.idea/vcs.xml
+.idea/workspace.xml
+123123.pyc
+spider.pyc
+te.pyc

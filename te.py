@@ -170,8 +170,6 @@ def get_data(detail_urls,s_date,e_date):
                         conn.commit()
                     else:
                         print 'wrong date input'
-
-
             # data.append(detag(job_url[0].split('?s=')[0]))
                 print '插入列表页---初级内容'
 
