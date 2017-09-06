@@ -87,8 +87,6 @@ for b in range(1, 6):
                             d) + '&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare=')
 
 
-
-
 def get_detail_urls():
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
     cursor = conn.cursor()

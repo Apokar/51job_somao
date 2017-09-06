@@ -67,12 +67,11 @@ def isExist(object_item):
     else:
         return 'Null'
 
-
+print '生成main_url  '+str(datetime.datetime.now())
 for b in range(1, 6):
     for c in range(1, 7):
         for d in range(1, 8):
             for a in range(1, 13):
-                print '生成main_url'
                 if a < 10:
                     main_urls.append('http://search.51job.com/list/000000,000000,0000,00,9,' + '0' + str(
                         a) + ',%2B,2,1.html?lang=c&stype=1&postchannel=0000&workyear=' + '0' + str(
@@ -86,7 +85,7 @@ for b in range(1, 6):
                         b) + '&cotype=99&degreefrom=' + '0' + str(
                         c) + '&jobterm=99&companysize=' + '0' + str(
                         d) + '&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare=')
-print '生成完毕'
+print '生成完毕  '+str(datetime.datetime.now())
 
 def get_detail_urls():
     print 'get_detail 连接数据库 '+str(datetime.datetime.now())
@@ -118,17 +117,18 @@ def get_detail_urls():
 
 
 def get_data(detail_urls, s_date, e_date):
-    print 'get_data 连接数据库 '+str(datetime.datetime.now())
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT a.job_url from 51job_career_list a union select b.job_url from 51job_error_log b")
-
-    existed_url = cursor.fetchall()
-
-    for old_urls in existed_url:
-        for urls in old_urls:
-            all_url.append(urls.encode('utf-8'))
+    ### 这一块为处理 获取的job_url是否之前有存在过，目前用此方法去重使得爬虫进程过于缓慢，先取消
+    # print 'get_data 连接数据库 '+str(datetime.datetime.now())
+    # conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+    # cursor = conn.cursor()
+    #
+    # cursor.execute("SELECT a.job_url from 51job_career_list a union select b.url from 51job_error_log b")
+    #
+    # existed_url = cursor.fetchall()
+    #
+    # for old_urls in existed_url:
+    #     for urls in old_urls:
+    #         all_url.append(urls.encode('utf-8'))
 
     for url_hp in detail_urls:
         try:
@@ -149,33 +149,33 @@ def get_data(detail_urls, s_date, e_date):
                 pub_date = re_findall('.*?"t5">(.*?)</span>', html)
 
                 # 通过job_url在51job-career-list表和error表里找出都不在这之中的，才插入数据
-                if job_url not in all_url:
+                # if job_url not in all_url:
 
                 # 增量补全数据时，在这里添加时间筛选条件
                 # s_date和e_date的输入格式为  20170505
                 # 先判断s_date和e_date是否跨年
                 # 跨年的就按s_date到年底20xx1231和20xx0101到e_date处理
-                    if str(s_date)[:4] == str(e_date)[:4]:
-                        print '检测出不跨年 '
+                if str(s_date)[:4] == str(e_date)[:4]:
+                    print '检测出不跨年 '
 
                         # print str(time.localtime()[0]) + str(pub_date[0]).replace('-', '')
-                        if str(s_date) <= str(time.localtime()[0]) + str(pub_date[0]).replace('-', '') <= str(e_date):
-                            print '1-->' + pub_date[0]
+                    if str(s_date) <= str(time.localtime()[0]) + str(pub_date[0]).replace('-', '') <= str(e_date):
+                        print '1-->' + pub_date[0]
 
                             # 插入时间符合的数据
-                            cursor.execute(
+                        cursor.execute(
                                 'insert into 51job_career_list values ("%s","%s","%s","%s","%s","%s","%s","%s") ' % (
                                     job_url[0].split('?s=')[0], detag(job_name[0]), company_url[0], company_name[0],
                                     lcation[0],
                                     salary[0],
                                     pub_date[0], str(datetime.datetime.now())))
-                            conn.commit()
+                        conn.commit()
 
-                        else:
-                            print '输入的时间格式错误 '+str(datetime.datetime.now())
+                    else:
+                        print '输入的时间格式错误 '+str(datetime.datetime.now())
 
-                    elif str(s_date)[:4] < str(e_date)[:4]:
-                        if str(e_date)[4:] <= str(pub_date[0]).replace('-', '') <= str(
+                elif str(s_date)[:4] < str(e_date)[:4]:
+                    if str(e_date)[4:] <= str(pub_date[0]).replace('-', '') <= str(
                                         time.localtime()[0] - 1) + '1231' and str(
                             time.localtime()[0]) + '0101' <= str(pub_date[0]).replace('-', '') <= str(e_date)[4:]:
                             # 插入时间符合的数据
@@ -187,16 +187,16 @@ def get_data(detail_urls, s_date, e_date):
                                     salary[0],
                                     pub_date[0], str(datetime.datetime.now())))
                             conn.commit()
-                        else:
-                            print '输入时间格式有问题 '+str(datetime.datetime.now())
                     else:
-                        print '时间不符合要求 '+str(datetime.datetime.now())
+                        print '输入时间格式有问题 '+str(datetime.datetime.now())
+                else:
+                    print '时间不符合要求 '+str(datetime.datetime.now())
 
 
                     # data.append(detag(job_url[0].split('?s=')[0]))
                     # print '插入列表页---初级内容'
-                else :
-                    print '这条数据已存在数据库中 '+str(datetime.datetime.now())
+                # else :
+                #     print '这条数据已存在数据库中 '+str(datetime.datetime.now())
 
         except Exception, e:
             if str(e).find('20006') >= 0:
@@ -222,6 +222,7 @@ def get_data(detail_urls, s_date, e_date):
 
 def main():
     detail_urls = get_detail_urls()
+    print '输入时间范围    '+str(datetime.datetime.now())
     s_date = input('Start from (input like this : YYYYMMDD):')
     e_date = input('End time (input like this : YYYYMMDD):')
     get_data(detail_urls, s_date, e_date)

@@ -67,11 +67,12 @@ def isExist(object_item):
         return 'Null'
 
 def get_detail():
+
     print 'get_detail 连接数据库 '+str(datetime.datetime.now())
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
     cursor = conn.cursor()
-    print '提取所有数据 处理中 '+str(datetime.datetime.now())
-    cursor.execute("select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null")
+    print '提取2000数据 处理中 '+str(datetime.datetime.now())
+    cursor.execute("select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null limit 2000")
     print'获取 data 中 '+str(datetime.datetime.now())
     data = cursor.fetchall()
     print'获得 data 啦 '+str(datetime.datetime.now())
