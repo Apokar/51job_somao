@@ -102,16 +102,18 @@ def get_detail():
                 cursor.execute('insert into 51job_error_log values("%s","%s","%s","%s")' % (sec_urls, 'read网页出错,报错信息： '+str(e), '2nd_page',str(datetime.datetime.now())))
                 conn.commit()
                 # break
-            info = re_findall('class="msg ltype">(.*?)</p>', html)
-            expr = re_findall('class="i1"></em>(.*?)</span>', html)
-            edu = re_findall('class="i2"></em>(.*?)</span>', html)
-            hire_number = re_findall('class="i3"></em>(.*?)</span>', html)
-            label = re_findall('class="t2">.*?<span>(.*?)</p>', html)
-            job_des = re_findall('class="bmsg job_msg inbox">.*?<span class="label">(.*?)<div class="mt10">', html)
-            career_type = re_findall('<span class="el">(.*?)</span>', html)
-            address = re_findall('<p class="fp">.*?<span class="label">.*?</span>(.*?)</p>', html)
-            company_des = re_findall('class="tmsg inbox">(.*?)</div>', html)
-
+            try:
+                info = re_findall('class="msg ltype">(.*?)</p>', html)
+                expr = re_findall('class="i1"></em>(.*?)</span>', html)
+                edu = re_findall('class="i2"></em>(.*?)</span>', html)
+                hire_number = re_findall('class="i3"></em>(.*?)</span>', html)
+                label = re_findall('class="t2">.*?<span>(.*?)</p>', html)
+                job_des = re_findall('class="bmsg job_msg inbox">.*?<span class="label">(.*?)<div class="mt10">', html)
+                career_type = re_findall('<span class="el">(.*?)</span>', html)
+                address = re_findall('<p class="fp">.*?<span class="label">.*?</span>(.*?)</p>', html)
+                company_des = re_findall('class="tmsg inbox">(.*?)</div>', html)
+            except Exception:
+                print 're_findall 区域  出错'+str(datetime.datetime.now())
 
             try:
                 cursor.execute(

@@ -67,7 +67,6 @@ def isExist(object_item):
         return 'Null'
 
 
-
 for b in range(1, 6):
     for c in range(1, 7):
         for d in range(1, 8):
@@ -161,7 +160,6 @@ def get_data(detail_urls):
 
                 cursor.execute('insert into 51job_error_log values("%s","%s","%s","%s")' % (job_url[0].split('?s=')[0], e ,'1st_page',str(datetime.datetime.now())))
                 conn.commit()
-
             # data.append(job_url[0].split('?s=')[0])
 
     # return data
@@ -247,8 +245,7 @@ def get_data(detail_urls):
 #                     print '未知错误'
 #                     cursor.execute('insert into 51job_error_log values("%s","%s","%s","%s")' % (sec_urls, 'unknown','2nd_page',str(datetime.datetime.now())))
 #                     conn.commit()
-#
-#
+
 
 def main():
     detail_urls = get_detail_urls()

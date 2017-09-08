@@ -119,8 +119,8 @@ def get_detail_urls():
 def get_data(detail_urls, s_date, e_date):
     ### 这一块为处理 获取的job_url是否之前有存在过，目前用此方法去重使得爬虫进程过于缓慢，先取消
     # print 'get_data 连接数据库 '+str(datetime.datetime.now())
-    # conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
-    # cursor = conn.cursor()
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+    cursor = conn.cursor()
     #
     # cursor.execute("SELECT a.job_url from 51job_career_list a union select b.url from 51job_error_log b")
     #
@@ -162,7 +162,7 @@ def get_data(detail_urls, s_date, e_date):
                     if str(s_date) <= str(time.localtime()[0]) + str(pub_date[0]).replace('-', '') <= str(e_date):
                         print '1-->' + pub_date[0]
 
-                            # 插入时间符合的数据
+                        # 插入时间符合的数据
                         cursor.execute(
                                 'insert into 51job_career_list values ("%s","%s","%s","%s","%s","%s","%s","%s") ' % (
                                     job_url[0].split('?s=')[0], detag(job_name[0]), company_url[0], company_name[0],
@@ -172,7 +172,7 @@ def get_data(detail_urls, s_date, e_date):
                         conn.commit()
 
                     else:
-                        print '输入的时间格式错误 '+str(datetime.datetime.now())
+                        print '(1)当前处理的发布时间 不符合要求  ' + str(datetime.datetime.now())
 
                 elif str(s_date)[:4] < str(e_date)[:4]:
                     if str(e_date)[4:] <= str(pub_date[0]).replace('-', '') <= str(
@@ -188,9 +188,9 @@ def get_data(detail_urls, s_date, e_date):
                                     pub_date[0], str(datetime.datetime.now())))
                             conn.commit()
                     else:
-                        print '输入时间格式有问题 '+str(datetime.datetime.now())
+                        print '(2)当前处理的发布时间 不符合要求  ' + str(datetime.datetime.now())
                 else:
-                    print '时间不符合要求 '+str(datetime.datetime.now())
+                    print '时间输入有误  '+str(datetime.datetime.now())
 
 
                     # data.append(detag(job_url[0].split('?s=')[0]))
@@ -214,7 +214,6 @@ def get_data(detail_urls, s_date, e_date):
                 print '错误信息 录入日志表 51job_error_log '+str(datetime.datetime.now())
             else:
                 print '未知错误 '+str(datetime.datetime.now())
-
                 cursor.execute('insert into 51job_error_log values("%s","%s","%s","%s")' % (
                 job_url[0].split('?s=')[0], e, '1st_page', str(datetime.datetime.now())))
                 conn.commit()
