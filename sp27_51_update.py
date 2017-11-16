@@ -17,7 +17,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
 cursor = conn.cursor()
 
 # cursor.execute('truncate table 51job_career_list')
@@ -89,7 +89,7 @@ print '生成完毕  '+str(datetime.datetime.now())
 
 def get_detail_urls():
     print 'get_detail 连接数据库 '+str(datetime.datetime.now())
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
     cursor = conn.cursor()
 
     for url_first_page in main_urls:
@@ -119,7 +119,7 @@ def get_detail_urls():
 def get_data(detail_urls, s_date, e_date):
     ### 这一块为处理 获取的job_url是否之前有存在过，目前用此方法去重使得爬虫进程过于缓慢，先取消
     # print 'get_data 连接数据库 '+str(datetime.datetime.now())
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
     cursor = conn.cursor()
     #
     # cursor.execute("SELECT a.job_url from 51job_career_list a union select b.url from 51job_error_log b")
@@ -202,7 +202,7 @@ def get_data(detail_urls, s_date, e_date):
             if str(e).find('20006') >= 0:
                 cursor.close()
                 conn.close()
-                conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+                conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
                 cursor = conn.cursor()
                 print '数据库连接重启 '+str(datetime.datetime.now())
 

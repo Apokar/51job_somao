@@ -14,7 +14,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
 cursor = conn.cursor()
 
 #
@@ -66,11 +66,11 @@ def isExist(object_item):
 
 def get_detail():
     print 'get_detail 连接数据库 ' + str(datetime.datetime.now())
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
     cursor = conn.cursor()
-    print '提取2000数据 处理中 ' + str(datetime.datetime.now())
+    print '提取1000数据 处理中 ' + str(datetime.datetime.now())
     cursor.execute(
-        "select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null limit 2000")
+        "select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null limit 1000")
     print'获取 data 中 ' + str(datetime.datetime.now())
     data = cursor.fetchall()
     print'获得 data 啦 ' + str(datetime.datetime.now())
@@ -106,7 +106,7 @@ def get_detail():
                 expr = re_findall('class="i1"></em>(.*?)</span>', html)
                 edu = re_findall('class="i2"></em>(.*?)</span>', html)
                 hire_number = re_findall('class="i3"></em>(.*?)</span>', html)
-                label = re_findall('class="t2">.*?<span>(.*?)</p>', html)
+                label = re_findall( 'class="t2">.*?<span>(.*?)</p>', html)
                 job_des = re_findall('class="bmsg job_msg inbox">.*?<span class="label">(.*?)<div class="mt10">', html)
                 career_type = re_findall('<span class="el">(.*?)</span>', html)
                 address = re_findall('<p class="fp">.*?<span class="label">.*?</span>(.*?)</p>', html)
@@ -116,33 +116,36 @@ def get_detail():
 
             try:
                 cursor.execute(
-                    'insert into 51job_career_detail values ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s") ' %
+                    'insert into 51job_career_detail values ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s") ' %
                     (
                         isExist(detag(info[0]).split('|')[0]),
                         isExist(detag(info[0]).split('|')[1]),
                         isExist(detag(info[0]).split('|')[2]),
-                        expr[0],
-                        edu[0],
+                        detag(expr[0]),
+                        detag(edu[0]),
                         hire_number[0],
                         detag(label[0].replace('</span>', '').replace('<span>', '|')),
                         detag(job_des[0]),
                         career_type[0],
-                        address[0],
-                        address[0],
+                        detag(address[0]),
+                        detag(address[0]),
                         detag(company_des[0]),
-                        sec_urls
+                        detag(sec_urls),
+                        str(datetime.datetime.now()),
+                        str(datetime.datetime.now())[:10]
                     )
 
                 )
                 conn.commit()
                 print '插入详情页--详细内容  ' + str(datetime.datetime.now())
             except Exception, e:
-                if str(e).find('20006') >= 0:
+                if str(e).find('2000 6') >= 0:
                     cursor.close()
                     conn.close()
-                    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="job", charset="utf8")
+                    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
                     cursor = conn.cursor()
                     print '数据库连接重启  ' + str(datetime.datetime.now())
+
 
                 elif str(e).find('10064') >= 0:
                     print sec_urls + ' --插入数据错误  ' + str(datetime.datetime.now())
@@ -151,7 +154,8 @@ def get_detail():
                     conn.commit()
                     print '错误信息 录入日志表 51job_error_log  ' + str(datetime.datetime.now())
                 else:
-                    print sec_urls + ' --出现未知错误  ' + str(datetime.datetime.now())
+                    print str(e)
+                    print sec_urls + ' --出现错误  ' + str(datetime.datetime.now())
                     cursor.execute('insert into 51job_error_log values("%s","%s","%s","%s")' % (
                         sec_urls, 'unknown', '2nd_page', str(datetime.datetime.now())))
                     conn.commit()
@@ -162,4 +166,4 @@ def get_detail():
 if __name__ == '__main__':
     while True:
         get_detail()
-        print '2000条处理结束 ' + str(datetime.datetime.now())
+        print '1000条处理结束 ' + str(datetime.datetime.now())

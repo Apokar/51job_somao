@@ -7,7 +7,7 @@
 *.iml
 out
 gen
-
+.gitignore
 te.py
 test.py
 testfield.py
