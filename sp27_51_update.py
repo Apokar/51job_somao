@@ -116,7 +116,7 @@ def get_detail_urls():
     return detail_urls
 
 
-def get_data(detail_urls, s_date, e_date):
+def get_data(detail_urls,s_date):
     ### 这一块为处理 获取的job_url是否之前有存在过，目前用此方法去重使得爬虫进程过于缓慢，先取消
     # print 'get_data 连接数据库 '+str(datetime.datetime.now())
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
@@ -129,6 +129,10 @@ def get_data(detail_urls, s_date, e_date):
     # for old_urls in existed_url:
     #     for urls in old_urls:
     #         all_url.append(urls.encode('utf-8'))
+
+    timeArray = time.strptime(str(s_date), "%Y%m%d")
+    # 转换成时间戳
+    s_stamp = time.mktime(timeArray)
 
     for url_hp in detail_urls:
         try:
@@ -155,48 +159,28 @@ def get_data(detail_urls, s_date, e_date):
                 # s_date和e_date的输入格式为  20170505
                 # 先判断s_date和e_date是否跨年
                 # 跨年的就按s_date到年底20xx1231和20xx0101到e_date处理
-                if str(s_date)[:4] == str(e_date)[:4]:
-                    print '检测出不跨年 '
 
-                        # print str(time.localtime()[0]) + str(pub_date[0]).replace('-', '')
-                    if str(s_date) <= str(time.localtime()[0]) + str(pub_date[0]).replace('-', '') <= str(e_date):
-                        print '1-->' + pub_date[0]
 
-                        # 插入时间符合的数据
-                        cursor.execute(
-                                'insert into 51job_career_list values ("%s","%s","%s","%s","%s","%s","%s","%s") ' % (
-                                    job_url[0].split('?s=')[0], detag(job_name[0]), company_url[0], company_name[0],
-                                    lcation[0],
-                                    salary[0],
-                                    pub_date[0], str(datetime.datetime.now())))
-                        conn.commit()
+                pubtime = str(s_date)[:4] + str(pub_date[0].replace('-', ''))
+                timeArray = time.strptime(str(pubtime), "%Y%m%d")
+                # 转换成时间戳
+                pub_stamp = time.mktime(timeArray)
 
-                    else:
-                        print '(1)当前处理的发布时间 不符合要求  ' + str(datetime.datetime.now())
+                e_stamp = s_stamp + int(345600)
 
-                elif str(s_date)[:4] < str(e_date)[:4]:
-                    if str(e_date)[4:] <= str(pub_date[0]).replace('-', '') <= str(
-                                        time.localtime()[0] - 1) + '1231' and str(
-                            time.localtime()[0]) + '0101' <= str(pub_date[0]).replace('-', '') <= str(e_date)[4:]:
-                            # 插入时间符合的数据
-                            print '2-->' + pub_date[0]
-                            cursor.execute(
-                                'insert into 51job_career_list values ("%s","%s","%s","%s","%s","%s","%s","%s") ' % (
-                                    job_url[0].split('?s=')[0], detag(job_name[0]), company_url[0], company_name[0],
-                                    lcation[0],
-                                    salary[0],
-                                    pub_date[0], str(datetime.datetime.now())))
-                            conn.commit()
-                    else:
-                        print '(2)当前处理的发布时间 不符合要求  ' + str(datetime.datetime.now())
+
+                if s_stamp <= pub_stamp < e_stamp:
+                # 插入时间符合的数据
+                    cursor.execute(
+                            'insert into 51job_career_list values ("%s","%s","%s","%s","%s","%s","%s","%s") ' % (
+                                job_url[0].split('?s=')[0], detag(job_name[0]), company_url[0], company_name[0],
+                                lcation[0],
+                                salary[0],
+                                pub_date[0], str(datetime.datetime.now())))
+                    conn.commit()
                 else:
-                    print '时间输入有误  '+str(datetime.datetime.now())
-
-
-                    # data.append(detag(job_url[0].split('?s=')[0]))
-                    # print '插入列表页---初级内容'
-                # else :
-                #     print '这条数据已存在数据库中 '+str(datetime.datetime.now())
+                    print u'(1)当前处理的发布时间 不符合要求  ' + str(datetime.datetime.now())
+                s_stamp = s_stamp + int(345600)
 
         except Exception, e:
             if str(e).find('20006') >= 0:
@@ -219,14 +203,16 @@ def get_data(detail_urls, s_date, e_date):
                 conn.commit()
 
 
-def main():
+def main_update(s_date):
+
     detail_urls = get_detail_urls()
-    print '输入时间范围    '+str(datetime.datetime.now())
-    s_date = input('Start from (input like this : YYYYMMDD):')
-    e_date = input('End time (input like this : YYYYMMDD):')
-    get_data(detail_urls, s_date, e_date)
+    # print '输入时间范围    '+str(datetime.datetime.now())
+    # s_date = input('Start from (input like this : YYYYMMDD):')
+    # timeArray = time.strptime(str(s_date), "%Y%m%d")
+    # # 转换成时间戳
+    # s_timestamp = time.mktime(timeArray)
+    # s_date = input('Start from (input like this : YYYYMMDD):')
+
+    get_data(detail_urls, s_date)
     # get_detail(data)
 
-
-if __name__ == '__main__':
-    main()

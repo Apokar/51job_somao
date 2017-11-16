@@ -68,9 +68,9 @@ def get_detail():
     print 'get_detail 连接数据库 ' + str(datetime.datetime.now())
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="51job", charset="utf8")
     cursor = conn.cursor()
-    print '提取1000数据 处理中 ' + str(datetime.datetime.now())
+    print '提取数据 处理中 ' + str(datetime.datetime.now())
     cursor.execute(
-        "select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null limit 1000")
+        "select a.job_url from 51job_career_list a left join 51job_career_detail b on a.job_url=b.job_url left join 51job_error_log c on c.url=a.job_url where b.job_url is null and c.url is null")
     print'获取 data 中 ' + str(datetime.datetime.now())
     data = cursor.fetchall()
     print'获得 data 啦 ' + str(datetime.datetime.now())
@@ -163,7 +163,7 @@ def get_detail():
     conn.close()
 
 
-if __name__ == '__main__':
-    while True:
-        get_detail()
-        print '1000条处理结束 ' + str(datetime.datetime.now())
+# if __name__ == '__main__':
+# #     while True:
+#     get_detail()
+#     print '处理结束 ' + str(datetime.datetime.now())
